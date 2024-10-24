@@ -1,5 +1,5 @@
 # FoldMark: Protecting Protein Generative Models with Watermarking
-<div align=center><img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark.png" width="200"/></div>
+<div align=center><img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark.png" width="202"/></div>
 
 In the github repo, we apply FoldMark to [FrameFlow](https://github.com/microsoft/protein-frame-flow) as an example.
 
