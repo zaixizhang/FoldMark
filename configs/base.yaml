@@ -1,0 +1,156 @@
+data:
+  dataset:
+    seed: 123
+    max_num_res: 256
+    cache_num_res: 0
+    min_num_res: 0
+    subset: null
+    samples_per_eval_length: 5
+    num_eval_lengths: 8
+    min_eval_length: 500
+    csv_path: ../watermark/preprocessed/metadata.csv
+  loader:
+    num_workers: 4
+    prefetch_factor: 10
+  sampler:
+    max_batch_size: 100
+    max_num_res_squared: 500000
+
+interpolant:
+  min_t: 0.01
+  min_t_train: 0.01
+  rots:
+    train_schedule: linear
+    sample_schedule: exp
+    exp_rate: 10
+  trans:
+    train_schedule: linear
+    sample_schedule: linear
+  sampling:
+    num_timesteps: 100
+  self_condition: ${model.edge_features.self_condition}
+
+model:
+  node_embed_size: 256
+  edge_embed_size: 128
+  watermark_emb: 16
+  symmetric: false
+  node_features:
+    c_s: ${model.node_embed_size}
+    c_pos_emb: 128
+    c_timestep_emb: 128
+    embed_diffuse_mask: false
+    max_num_res: 2000
+    timestep_int: 1000
+    aatype_pred_num_tokens: 21
+    embed_aatype: true
+    embed_chain: false
+    embed_watermark: true
+    watermark_emb: ${model.watermark_emb}
+  edge_features:
+    single_bias_transition_n: 2
+    c_s: ${model.node_embed_size}
+    c_p: ${model.edge_embed_size}
+    relpos_k: 64
+    use_rbf: true
+    num_rbf: 32
+    feat_dim: 64
+    num_bins: 22
+    self_condition: true
+  ipa:
+    c_s: ${model.node_embed_size}
+    c_z: ${model.edge_embed_size}
+    c_hidden: 128
+    no_heads: 8
+    no_qk_points: 8
+    no_v_points: 12
+    seq_tfmr_num_heads: 4
+    seq_tfmr_num_layers: 2
+    num_blocks: 6
+
+encoder_decoder:
+  node_embed_size: 128
+  edge_embed_size: 128
+  watermark_emb: 16
+  rank: 16
+  symmetric: false
+  node_features:
+    c_s: ${encoder_decoder.node_embed_size}
+    c_pos_emb: 128
+    c_timestep_emb: 128
+    embed_diffuse_mask: false
+    max_num_res: 2000
+    timestep_int: 1000
+    aatype_pred_num_tokens: 21
+    embed_aatype: true
+    embed_chain: false
+    embed_watermark: true
+    watermark_emb: ${encoder_decoder.watermark_emb}
+  edge_features:
+    single_bias_transition_n: 2
+    c_s: ${encoder_decoder.node_embed_size}
+    c_p: ${encoder_decoder.edge_embed_size}
+    relpos_k: 64
+    use_rbf: true
+    num_rbf: 32
+    feat_dim: 64
+    num_bins: 22
+    self_condition: true
+  ipa:
+    c_s: ${encoder_decoder.node_embed_size}
+    c_z: ${encoder_decoder.edge_embed_size}
+    c_hidden: 128
+    no_heads: 8
+    no_qk_points: 8
+    no_v_points: 12
+    seq_tfmr_num_heads: 4
+    seq_tfmr_num_layers: 2
+    num_blocks: 6
+
+experiment:
+  debug: true
+  seed: 123
+  num_devices: 2
+  warm_start: null
+  warm_start_cfg_override: true
+  use_swa: false
+  batch_ot:
+    enabled: true
+    cost: kabsch
+    noise_per_sample: 1
+    permute: false
+  training:
+    min_plddt_mask: null
+    loss: se3_vf_loss
+    bb_atom_scale: 0.1
+    trans_scale: 0.1
+    translation_loss_weight: 2.0
+    t_normalize_clip: 0.9
+    rotation_loss_weights: 1.0
+    aux_loss_weight: 1.0
+    aux_loss_t_pass: 0.25
+  wandb:
+    name: Encoder_Extractor
+    project: watermark
+    save_code: true
+    tags: []
+  optimizer:
+    lr: 0.0001
+  trainer:
+    overfit_batches: 0
+    min_epochs: 1
+    max_epochs: 200
+    accelerator: gpu
+    log_every_n_steps: 1
+    deterministic: false
+    strategy: ddp
+    check_val_every_n_epoch: 1
+    accumulate_grad_batches: 1
+  checkpointer:
+    dirpath: ckpt/${experiment.wandb.project}/${experiment.wandb.name}/${now:%Y-%m-%d}_${now:%H-%M-%S}
+    save_last: true
+    save_top_k: 3
+    monitor: valid/recovery
+    mode: max
+  load_ckpt: /n/holylabs/LABS/mzitnik_lab/Users/zaixizhang/watermark/ckpt/watermark/Encoder_Extractor/2024-09-18_09-10-09/epoch=17-step=32130.ckpt
+  load_ckpt1: /n/holylabs/LABS/mzitnik_lab/Users/zaixizhang/watermark/weights/scope/published.ckpt
