@@ -63,6 +63,23 @@ python -W ignore experiments/pretrain.py
 python -W ignore experiments/finetune.py
 ```
 
+## Acknowledgements
+
+We thank the opensource codes from [WaDiff](https://github.com/rmin2000/WaDiff) , [AquaLoRA](https://github.com/Georgefwt/AquaLoRA) and [openfold](https://github.com/aqlaboratory/openfold) .
+
+## Reference
+```
+@article{zhang2024foldmark,
+  title={FoldMark: Protecting Protein Generative Models with Watermarking},
+  author={Zhang, Zaixi and Jin, Ruofan and Fu, Kaidi and Cong, Le and Zitnik, Marinka and Wang, Mengdi},
+  journal={bioRxiv},
+  pages={2024--10},
+  year={2024},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
+
+
 
 
 
