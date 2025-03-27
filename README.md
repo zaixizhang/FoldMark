@@ -93,10 +93,17 @@ If you find this work helpful, please cite our paper:
 ## 🙏 Acknowledgments
 
 We thank the following open-source projects for their valuable contributions:
+- [Protenix](https://github.com/bytedance/Protenix)
+- [FrameFlow](https://github.com/microsoft/frameflow)
+- [FrameDiff](https://github.com/microsoft/framediff)
+- [RFDiffusion](https://github.com/RosettaCommons/RFdiffusion)
+- [Boltz-1](https://github.com/openfold/boltzmann)
+- [Chai-1](https://github.com/chroma-core/chai-1)
+- [RFDiffusionAA](https://github.com/RosettaCommons/RFdiffusion)
 - [WaDiff](https://github.com/rmin2000/WaDiff)
 - [AquaLoRA](https://github.com/Georgefwt/AquaLoRA)
 - [openfold](https://github.com/aqlaboratory/openfold)
-- [Protenix](https://github.com/bytedance/Protenix)
+
 
 ## 📄 License
 
