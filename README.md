@@ -1,4 +1,4 @@
-# FoldMark: Protecting Protein Generative Models with Watermarking
+# FoldMark: Safeguarding Protein Structure Generative Models with Distributional and Evolutionary Watermarking
 <div align=center><img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark.png" width="202"/></div>
 
 <div align=center>
