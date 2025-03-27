@@ -21,10 +21,12 @@ We've created an interactive demo on Hugging Face Spaces where you can:
 
 ## 🚀 Overview
 
-FoldMark is a novel watermarking framework for protein structure prediction models. It enables:
-- Robust watermark embedding in protein structures
-- Minimal impact on prediction accuracy
-- Protection against model theft and unauthorized use
+FoldMark is a novel watermarking framework for protein generative models that embeds user-specific data across protein structures. It:
+- Leverages evolutionary principles to adaptively embed watermarks (higher capacity in flexible regions, minimal disruption in conserved areas)
+- Maintains structural quality (>0.9 scTM scores) while achieving >95% watermark bit accuracy at 32 bits
+- Enables tracking of up to 1 million users and detection of unauthorized model training (even with only 30% watermarked data)
+- Works with leading models like AlphaFold3, ESMFold, RFDiffusion, and RFDiffusionAA
+- Withstands post-processing and adaptive attacks, offering a generalized solution for ethical protein AI deployment
 
 ## 📊 Results
 
