@@ -5,6 +5,7 @@
 
 [![Hugging Face Demo](https://img.shields.io/badge/🤗%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/Zaixi/FoldMark)
 [![Paper](https://img.shields.io/badge/📄-Paper-green)](https://arxiv.org/abs/2410.20354)
+[![Twitter](https://img.shields.io/badge/𝕏-Twitter-black)](https://x.com/BiologyAIDaily/status/1850175194884882799)
 
 </div>
 
