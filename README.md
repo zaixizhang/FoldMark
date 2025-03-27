@@ -1,74 +1,70 @@
 # FoldMark: Protecting Protein Generative Models with Watermarking
 <div align=center><img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark.png" width="202"/></div>
 
-In the github repo, we apply FoldMark to [FrameFlow](https://github.com/microsoft/protein-frame-flow) as an example.
+<div align=center>
 
-## Installation
+[![Hugging Face Demo](https://img.shields.io/badge/🤗%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/Zaixi/FoldMark)
+[![Paper](https://img.shields.io/badge/📄-Paper-green)](https://www.biorxiv.org/content/10.1101/2024.03.10.584409v1)
+
+</div>
+
+## 🌟 Try Our Demo!
+
+We've created an interactive demo on Hugging Face Spaces where you can:
+- Input protein sequences and get watermarked structure predictions
+- Compare watermarked vs. non-watermarked structures
+- Visualize the differences in 3D
+- Pretrained Checkpoints and Inference code
+
+[Try the Demo →](https://huggingface.co/spaces/Zaixi/FoldMark)
+
+## 🚀 Overview
+
+FoldMark is a novel watermarking framework for protein structure prediction models. It enables:
+- Robust watermark embedding in protein structures
+- Minimal impact on prediction accuracy
+- Protection against model theft and unauthorized use
+
+## 🛠️ Installation
 
 ```bash
-# Conda environment with dependencies.
+# Create and activate conda environment
 conda env create -f foldmark.yml
-
-# Activate environment
 conda activate fm
 
-# Manually need to install torch-scatter.
+# Install torch-scatter
 pip install torch-scatter -f https://data.pyg.org/whl/torch-2.0.0+cu117.html
 
-# Install local package.
-# Current directory should be FoldMark/
+# Install local package
 pip install -e .
 ```
 
-## Wandb
+## 📊 Training Pipeline
 
-Our training relies on logging with wandb. Log in to Wandb and make an account.
-Authorize Wandb [here](https://wandb.ai/authorize).
+### Data Setup
+1. Download preprocessed SCOPe dataset (~280MB):
+   [Download Link](https://www.dropbox.com/scl/fi/b8l0bqowi96hl21ycsmht/preprocessed_scope.tar.gz?rlkey=0h7uulr7ioyvzlap6a0rwpx0n&dl=0)
+2. Extract the data:
+   ```bash
+   tar -xvzf preprocessed_scope.tar.gz
+   rm preprocessed_scope.tar.gz
+   ```
 
-## Data
+### Training Steps
+1. Pretrain the model:
+   ```bash
+   python -W ignore experiments/pretrain.py
+   ```
+2. Finetune with watermarking:
+   ```bash
+   python -W ignore experiments/finetune.py
+   ```
 
-Download preprocessed SCOPe dataset (~280MB) hosted on dropbox: [link](https://www.dropbox.com/scl/fi/b8l0bqowi96hl21ycsmht/preprocessed_scope.tar.gz?rlkey=0h7uulr7ioyvzlap6a0rwpx0n&dl=0).
+## 📝 Citation
 
-Other datasets are also possible to train on using the `data/process_pdb_files.py` script.
-However, we currently do not support other datasets.
+If you find this work helpful, please cite our paper:
 
-```bash
-# Expand tar file.
-tar -xvzf preprocessed_scope.tar.gz
-rm preprocessed_scope.tar.gz
-```
-Your directory should now look like this 
-```
-├── analysis
-├── build
-├── configs
-├── data
-├── experiments
-├── media
-├── models
-├── openfold
-├── preprocessed
-└── weights
-```
-
-## Pretrain
-
-```bash
-python -W ignore experiments/pretrain.py
-```
-
-## Pretrain
-
-```bash
-python -W ignore experiments/finetune.py
-```
-
-## Acknowledgements
-
-We thank the opensource codes from [WaDiff](https://github.com/rmin2000/WaDiff) , [AquaLoRA](https://github.com/Georgefwt/AquaLoRA) and [openfold](https://github.com/aqlaboratory/openfold) .
-
-## Reference
-```
+```bibtex
 @article{zhang2024foldmark,
   title={FoldMark: Protecting Protein Generative Models with Watermarking},
   author={Zhang, Zaixi and Jin, Ruofan and Fu, Kaidi and Cong, Le and Zitnik, Marinka and Wang, Mengdi},
@@ -79,7 +75,15 @@ We thank the opensource codes from [WaDiff](https://github.com/rmin2000/WaDiff) 
 }
 ```
 
+## 🙏 Acknowledgments
 
+We thank the following open-source projects for their valuable contributions:
+- [WaDiff](https://github.com/rmin2000/WaDiff)
+- [AquaLoRA](https://github.com/Georgefwt/AquaLoRA)
+- [openfold](https://github.com/aqlaboratory/openfold)
+- [Protenix](https://github.com/bytedance/Protenix)
 
+## 📄 License
 
+This project is licensed under the MIT License - see the LICENSE file for details.
 
