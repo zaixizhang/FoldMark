@@ -25,6 +25,18 @@ FoldMark is a novel watermarking framework for protein structure prediction mode
 - Minimal impact on prediction accuracy
 - Protection against model theft and unauthorized use
 
+## 📊 Results
+
+### Structure Prediction with Watermarking
+<div align=center>
+<img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/Struct_pred.pdf" width="600"/>
+</div>
+
+### De Novo Protein Structure Design with Watermarking
+<div align=center>
+<img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/de_novo.pdf" width="600"/>
+</div>
+
 ## 🛠️ Installation
 
 ```bash
@@ -86,4 +98,8 @@ We thank the following open-source projects for their valuable contributions:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+
+
 
