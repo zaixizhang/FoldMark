@@ -4,7 +4,7 @@
 <div align=center>
 
 [![Hugging Face Demo](https://img.shields.io/badge/🤗%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/Zaixi/FoldMark)
-[![Paper](https://img.shields.io/badge/📄-Paper-green)](https://www.biorxiv.org/content/10.1101/2024.03.10.584409v1)
+[![Paper](https://img.shields.io/badge/📄-Paper-green)](https://arxiv.org/abs/2410.20354)
 
 </div>
 
