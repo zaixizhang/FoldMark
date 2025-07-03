@@ -9,6 +9,12 @@
 
 </div>
 
+## 📰 Media Coverage
+- **Science**: [Built-in safeguards might stop AI from designing bioweapons](https://www.science.org/content/article/built-safeguards-might-stop-ai-designing-bioweapons)
+- **Nature Biotechnology**: [Watermarking generative AI for protein structure](https://www.nature.com/articles/s41587-025-02650-8)
+- **Princeton AI Lab**: [Deep Dive Series: Building Biosecurity Safeguards into AI for Science](https://blog.ai.princeton.edu/2025/06/26/deep-dive-series-building-biosecurity-safeguards-into-ai-for-science/)
+
+
 ## 🌟 Try Our Demo!
 
 We've created an interactive demo on Hugging Face Spaces where you can:
