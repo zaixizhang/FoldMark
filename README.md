@@ -4,8 +4,8 @@
 <div align=center>
 
 [![Hugging Face Demo](https://img.shields.io/badge/🤗%20Hugging%20Face-Demo-blue)](https://huggingface.co/spaces/Zaixi/FoldMark)
-[![Paper](https://img.shields.io/badge/📄-Paper-green)](https://arxiv.org/abs/2410.20354)
-[![Twitter](https://img.shields.io/badge/𝕏-Twitter-black)](https://x.com/BiologyAIDaily/status/1850175194884882799)
+[![Paper](https://img.shields.io/badge/📄-Paper-green)](https://www.biorxiv.org/content/10.1101/2024.10.23.619960v7)
+[![Twitter](https://img.shields.io/badge/𝕏-Twitter-black)](https://x.com/ZaixiZhang/status/1937877504842158503)
 
 </div>
 
@@ -94,8 +94,8 @@ If you find this work helpful, please cite our paper:
 
 We thank the following open-source projects for their valuable contributions:
 - [Protenix](https://github.com/bytedance/Protenix)
-- [FrameFlow](https://github.com/microsoft/frameflow)
-- [FrameDiff](https://github.com/microsoft/framediff)
+- [FrameFlow](https://github.com/microsoft/protein-frame-flow)
+- [FrameDiff](https://github.com/jasonkyuyim/se3_diffusion)
 - [RFDiffusion](https://github.com/RosettaCommons/RFdiffusion)
 - [Boltz-1](https://github.com/openfold/boltzmann)
 - [Chai-1](https://github.com/chaidiscovery/chai-lab)
