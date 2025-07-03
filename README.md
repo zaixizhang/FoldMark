@@ -46,6 +46,11 @@ FoldMark is a novel watermarking framework for protein generative models that em
 <img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/de_novo.png" width="600"/>
 </div>
 
+### Wet Lab Verifications on GFP and Cas13 Redesign
+<div align=center>
+<img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark_wetlab.png" width="600"/>
+</div>
+
 ## 🛠️ Installation
 
 ```bash
