@@ -40,6 +40,23 @@ python tutorials/egfp/step3_esm2_ranking.py
 
 Outputs land in `tutorials/egfp/outputs/`.
 
+## Example designs
+
+Three representative constructs shown in the manuscript figure (panel c):
+
+| Construct | pLDDT | TM-score vs WT | Watermark detected |
+|-----------|-------|----------------|--------------------|
+| FoldMark_EGFP_2 | 94.00 | 0.9814 | True |
+| FoldMark_EGFP_6 | 93.57 | 0.9805 | True |
+| FoldMark_EGFP_8 | 94.10 | 0.9833 | True |
+
+TM-scores > 0.98 confirm that watermarking introduces only minimal structural
+deviation while remaining detectable.
+
+<div align=center>
+<img src="../assets/egfp_cas13.png" width="700"/>
+</div>
+
 ## Wet-lab results
 
 12 constructs (top-ranked by ESM2-650M PLL, ≤ 25 mutations) were synthesised

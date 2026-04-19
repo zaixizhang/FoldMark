@@ -47,6 +47,26 @@ python tutorials/cas13/step3_esm2_ranking.py
 
 Outputs land in `tutorials/cas13/outputs/`.
 
+## Example designs
+
+Three representative constructs shown in the manuscript figure (panel d):
+
+| Construct | pLDDT | TM-score vs 7VTI | Watermark detected |
+|-----------|-------|------------------|--------------------|
+| FoldMark_Cas13_1 | 67.70 | 0.3589 | True |
+| FoldMark_Cas13_2 | 66.35 | 0.3657 | True |
+| FoldMark_Cas13_3 | 68.98 | 0.3740 | True |
+
+The TM-score vs. the 7VTI crystal structure is ~0.36, reflecting the expected
+conformational difference between the apo AlphaFold3 prediction (used as design
+template) and the crystal structure. This is not a concern for function: the
+HEPN catalytic residues are fixed and the redesigned lid adopts a stable
+conformation confirmed by the SHERLOCK assay.
+
+<div align=center>
+<img src="../assets/egfp_cas13.png" width="700"/>
+</div>
+
 ## Wet-lab results
 
 Top-ranked constructs (ESM2-650M PLL, ≤ 30 mutations) were synthesised and
