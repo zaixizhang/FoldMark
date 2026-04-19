@@ -105,9 +105,7 @@ Chromophore residues and proton-wire residues are fixed. 12 constructs synthesis
 
 **Cas13 (PDB 7VTI, apo/inactive state)** — design region: residues 258–325 (helical lid).
 HEPN catalytic dyads are fixed. Top constructs showed 95% editing efficiency and
->90% watermark bit accuracy. The inactive (apo) state was used because structure
-predictors output the apo conformation for bare sequences; see
-[`tutorials/cas13/README.md`](tutorials/cas13/README.md) for the full rationale.
+over 90% watermark bit accuracy. 
 
 ```bash
 # Quick start (run from the FoldMark HuggingFace Space root after installation)
