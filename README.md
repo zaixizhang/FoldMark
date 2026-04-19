@@ -25,18 +25,7 @@ We've created an interactive demo on Hugging Face Spaces where you can:
 
 [Try the Demo →](https://huggingface.co/spaces/Zaixi/FoldMark)
 
-### Quick start on HuggingFace
 
-The demo has three tabs: **Structure Predictor (JSON Upload)**, **Structure Predictor (Manual Input)**, and **Watermark Detector**.
-
-| | |
-|---|---|
-| ![Upload JSON and check Add Watermark](tutorials/huggingface_tutorial/assets/demo2_add_watermark.jpg) | ![3D output: gray = unwatermarked, cyan = watermarked](tutorials/huggingface_tutorial/assets/demo4_3d_result.jpg) |
-| **1.** Upload a sequence JSON (or type manually) and check **Add Watermark** | **2.** View the overlaid 3D result and download the watermarked CIF |
-
-Upload the downloaded CIF to the **Watermark Detector** tab to verify the embedded signal.
-
-See the full step-by-step guide with all screenshots: [`tutorials/huggingface_tutorial/`](tutorials/huggingface_tutorial/)
 
 ## 🚀 Overview
 
@@ -126,6 +115,19 @@ python tutorials/egfp/step1_watermarked_structure_prediction.py
 python tutorials/egfp/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinMPNN
 python tutorials/egfp/step3_esm2_ranking.py
 ```
+
+## Quick start on HuggingFace
+
+The demo has three tabs: **Structure Predictor (JSON Upload)**, **Structure Predictor (Manual Input)**, and **Watermark Detector**.
+
+| | |
+|---|---|
+| ![Upload JSON and check Add Watermark](tutorials/huggingface_tutorial/assets/demo2_add_watermark.jpg) | ![3D output: gray = unwatermarked, cyan = watermarked](tutorials/huggingface_tutorial/assets/demo4_3d_result.jpg) |
+| **1.** Upload a sequence JSON (or type manually) and check **Add Watermark** | **2.** View the overlaid 3D result and download the watermarked CIF |
+
+Upload the downloaded CIF to the **Watermark Detector** tab to verify the embedded signal.
+
+See the full step-by-step guide with all screenshots: [`tutorials/huggingface_tutorial/`](tutorials/huggingface_tutorial/)
 
 ## 📝 Citation
 
