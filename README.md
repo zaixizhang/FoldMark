@@ -86,6 +86,36 @@ pip install -e .
 <img src="https://github.com/zaixizhang/FoldMark/blob/main/assets/foldmark_wetlab.png" width="600"/>
 </div>
 
+## 📖 Reproduction Tutorials
+
+Step-by-step scripts to reproduce the eGFP and Cas13 wet-lab watermarking
+experiments are provided in [`tutorials/`](tutorials/).
+
+Each protein has **three scripts** covering the full pipeline:
+
+| Step | Script | Description |
+|------|--------|-------------|
+| 1 | `step1_watermarked_structure_prediction.py` | Run FoldMark-Protenix to obtain a watermarked backbone |
+| 2 | `step2_proteinmpnn_inverse_folding.py` | Partial inverse folding with ProteinMPNN (100 sequences, T = 0.1) |
+| 3 | `step3_esm2_ranking.py` | Score with ESM2-650M and export top constructs for synthesis |
+
+**eGFP (PDB 4EUL)** — design regions: residues 15–40 and 160–190 (surface-exposed loops).
+Chromophore residues and proton-wire residues are fixed. 12 constructs synthesised;
+98% fluorescence and >90% watermark bit accuracy.
+
+**Cas13 (PDB 7VTI, apo/inactive state)** — design region: residues 258–325 (helical lid).
+HEPN catalytic dyads are fixed. Top constructs showed 95% editing efficiency and
+>90% watermark bit accuracy. The inactive (apo) state was used because structure
+predictors output the apo conformation for bare sequences; see
+[`tutorials/cas13/README.md`](tutorials/cas13/README.md) for the full rationale.
+
+```bash
+# Quick start (run from the FoldMark HuggingFace Space root after installation)
+python tutorials/egfp/step1_watermarked_structure_prediction.py
+python tutorials/egfp/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinMPNN
+python tutorials/egfp/step3_esm2_ranking.py
+```
+
 ## 📝 Citation
 
 If you find this work helpful, please cite our paper:
