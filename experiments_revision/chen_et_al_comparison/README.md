@@ -1,8 +1,8 @@
-# Chen et al. baseline comparison (Extended Data Fig. 1 / Fig. R1)
+# Chen et al. baseline comparison (Extended Data Fig. 1)
 
-Reviewer Comment 3 asked for a **protein-specific baseline** such as Chen et al.
-This directory contains the full pipeline for that comparison, under a matched
-generation and evaluation protocol.
+A **protein-specific baseline** comparison: FoldMark against sequence-level
+protein watermarking. This directory contains the full pipeline for that
+comparison, under a matched generation and evaluation protocol.
 
 > Chen et al., *ProteinWatermark: Enhancing privacy in secured protein design* —
 > https://github.com/poseidonchan/ProteinWatermark
@@ -30,7 +30,7 @@ Step 1 ── ProGen2 generation, both arms, matched seeds + messages
               ↓  sequences_chen.fasta / sequences_foldmark.fasta / manifest.csv
 Step 2 ── Fold each arm with its predictor; score bit recovery + scTM
               ↓  paired_scores.csv
-Step 3 ── Wilcoxon signed-rank + Holm correction → statistics.csv + Fig. R1 b,c
+Step 3 ── Wilcoxon signed-rank + Holm correction → statistics.csv + figure
 ```
 
 ## Making a zero-bit scheme multi-bit (important)
@@ -53,18 +53,17 @@ multi-bit scheme.
 - at detection, each segment is scored under all `2 ** bits_per_chunk` candidate
   keys and the argmax is the recovered chunk.
 
-**This is the fairest available construction and is deliberately generous to the
-baseline** — it is the strongest obvious way to give a zero-bit scheme a
-payload. It also makes the short-length behaviour transparent rather than
-mysterious: at L = 100 with 16 chunks, each segment is only ~6 residues, which
-is very little evidence per bit. Any comparison of "bit accuracy" against a
-zero-bit method rests on a choice like this one, and it should be stated in the
-manuscript rather than left implicit.
+**This construction is deliberately generous to the baseline** — it is the
+strongest obvious way to give a zero-bit scheme a payload. It also makes the
+short-length behaviour transparent rather than mysterious: at L = 100 with 16
+chunks, each segment is only ~6 residues, which is very little evidence per bit.
 
-If a reviewer would prefer a **zero-bit** comparison instead (detection AUROC or
-TPR at fixed FPR, using Chen's native score/p-value against FoldMark's decoder
-confidence), that is a different and also defensible framing — but it is not
-what the current response text claims, so it would need the response rewritten.
+Any comparison of "bit accuracy" against a zero-bit method rests on a choice of
+this kind, which is why it is stated explicitly here and in the Methods. A
+zero-bit framing (detection AUROC, or TPR at fixed FPR, using Chen's native
+score/p-value against FoldMark's decoder confidence) is an alternative and also
+defensible comparison; we report the multi-bit form because it measures the
+payload capacity that FoldMark is designed to provide.
 
 ## Metrics
 
@@ -115,15 +114,10 @@ python .../step2_fold_and_score.py --limit 50 --skip_sctm   # recovery only, fas
 | `outputs/step2/per_sequence_scores.csv` | One row per (sequence, arm): bit accuracy, scTM |
 | `outputs/step2/paired_scores.csv` | One row per pair, both arms side by side |
 | `outputs/step3/statistics.csv` | Per length and metric: n, means, s.d., medians, W, p, Holm-corrected p, stars |
-| `outputs/step3/watermark_comparison_chen_vs_foldmark.png/.pdf` | Fig. R1 panels b, c |
+| `outputs/step3/watermark_comparison_chen_vs_foldmark.png/.pdf` | Extended Data Fig. 1, panels b and c |
 
-Every value plotted by Step 3 is read from the Step 2 CSV — no summary
-statistic is hard-coded in the figure script.
+## Provenance of Extended Data Fig. 1
 
-## Note on the figure in the current revision draft
-
-`FoldMark_revision/watermark_comparison.py` (outside this repo) generates the
-same two-panel figure from **hard-coded mock numbers** — its own docstring says
-"Mock comparison" and the significance stars there are labelled decorative. That
-script must not be the source of Extended Data Fig. 1. Step 3 here is its
-replacement: same house style, but every number derived from the Step 2 CSVs.
+Step 3 is the canonical source for this figure. All plotted values are read from
+`outputs/step2/*.csv`; no summary statistic is hard-coded in the figure script,
+so any panel can be traced back to the per-sequence data that produced it.

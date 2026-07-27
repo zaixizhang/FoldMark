@@ -1,14 +1,14 @@
-# Supplementary experiments (revision)
+# Supplementary experiments
 
-Code for the additional experiments added during peer review. Each subdirectory
-is self-contained, maps to one reviewer comment, and produces the figure and
-statistics for the corresponding Extended Data item.
+Code for the supplementary analyses accompanying the manuscript. Each
+subdirectory is self-contained and produces the figure and statistics for the
+corresponding Extended Data item.
 
 ## Contents
 
-| Directory | Reviewer comment | Manuscript item |
-|-----------|------------------|-----------------|
-| [`chen_et_al_comparison/`](./chen_et_al_comparison) | Comment 3 — add a protein-specific baseline such as Chen et al. | Extended Data Fig. 1 |
+| Directory | Experiment | Manuscript item |
+|-----------|------------|-----------------|
+| [`chen_et_al_comparison/`](./chen_et_al_comparison) | FoldMark vs. a protein-specific sequence-level watermarking baseline (Chen et al.) | Extended Data Fig. 1 |
 
 ## Conventions
 
@@ -16,8 +16,8 @@ Each subdirectory follows the same layout as `tutorials/`:
 
 - numbered `stepN_*.py` scripts that run in order, each writing to
   `outputs/stepN/` and passing an explicit file path to the next;
-- a `README.md` stating the setup, the metrics, the exact commands, and any
-  methodological choice a reviewer would want to see justified;
+- a `README.md` stating the setup, the metrics, the exact commands, and the
+  justification for any methodological choice the comparison rests on;
 - a `requirements.txt` listing only what that experiment adds on top of the
   base FoldMark environment.
 
