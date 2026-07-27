@@ -187,7 +187,31 @@ class FlowModule(LightningModule):
         self.validation_epoch_metrics = []
         self.validation_epoch_samples = []
         self.save_hyperparameters()
-        
+
+    def on_load_checkpoint(self, checkpoint):
+        """
+        Allow checkpoints saved before confidence-weighted decoding to load.
+
+        The decoder's confidence head is a new parameter, so a pre-existing
+        checkpoint has no entry for it and Lightning's strict load would fail.
+        Zeros are exactly the head's initialisation, which makes the confidence
+        softmax uniform and the pooled code identical to the masked mean — so a
+        checkpoint restored this way behaves precisely as it did before the head
+        existed. Only the confidence-head keys are filled in; every other
+        mismatch is still reported.
+        """
+        state_dict = checkpoint.get('state_dict')
+        if state_dict is None:
+            return
+        logger = getattr(self, '_print_logger', logging.getLogger(__name__))
+        for name, param in self.state_dict().items():
+            if 'confidence_head' in name and name not in state_dict:
+                state_dict[name] = torch.zeros_like(param)
+                logger.info(
+                    f'Checkpoint predates confidence-weighted decoding; '
+                    f'initialising {name} to zeros (equivalent to mean pooling).'
+                )
+
     def on_train_start(self):
         self._epoch_start_time = time.time()
         

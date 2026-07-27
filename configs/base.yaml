@@ -74,6 +74,15 @@ encoder_decoder:
   watermark_emb: 16
   rank: 16
   symmetric: false
+  # Confidence-weighted decoding: the decoder emits a per-residue code plus a
+  # per-residue confidence, and pools the codes with a masked softmax over the
+  # confidences rather than averaging them uniformly. The confidence head is
+  # zero-initialised, so at initialisation pooling is exactly the masked mean.
+  # Set to false to recover unweighted pooling.
+  confidence_weighted_decoding: true
+  # Softmax temperature on the confidence logits. Lower values concentrate
+  # weight on the most confident residues.
+  confidence_temperature: 1.0
   node_features:
     c_s: ${encoder_decoder.node_embed_size}
     c_pos_emb: 128

@@ -132,6 +132,46 @@ python tutorials/dhfr/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinM
 python tutorials/tev/step2_proteinmpnn_inverse_folding.py  --mpnn_dir ./ProteinMPNN --group a
 ```
 
+## 🔎 Confidence-Weighted Decoding
+
+The decoder emits a **per-residue** code together with a **per-residue
+confidence**, and pools the codes by a masked softmax over the confidences
+rather than averaging them uniformly:
+
+```
+z_i = code_extractor(h_i)                 per-residue code      [B, N, K]
+a_i = confidence_head(h_i)                per-residue confidence [B, N]
+w   = softmax_i(a_i / T)                  over valid residues only
+code = Σ_i w_i · z_i                      pooled message         [B, K]
+```
+
+Configured in [`configs/base.yaml`](configs/base.yaml):
+
+```yaml
+encoder_decoder:
+  confidence_weighted_decoding: true   # false recovers unweighted pooling
+  confidence_temperature: 1.0          # lower concentrates weight on confident residues
+```
+
+`Decoder.forward(..., return_confidence=True)` additionally returns the
+normalised per-residue weights, so the confidence distribution can be inspected
+or visualised along the chain.
+
+Two properties worth noting:
+
+- **The confidence head is zero-initialised.** All logits start equal, the
+  softmax is uniform, and the pooled code is then *exactly* the masked mean.
+  Confidence weighting is a strict generalisation of unweighted pooling, so
+  training resumes from precisely where an unweighted checkpoint left off.
+  Checkpoints predating the head load through `FlowModule.on_load_checkpoint`,
+  which fills in the missing keys with zeros and leaves every other mismatch
+  reported as usual.
+- **Both pooling paths respect `res_mask`.** The earlier implementation used a
+  plain `.mean(dim=1)` over the padded length; since the code extractor has a
+  bias, padded positions contributed that bias and the divisor was the padded
+  length rather than the true one. Padding is now excluded from the code, from
+  the softmax normaliser, and from the divisor.
+
 ## 🧪 Supplementary Experiments
 
 Additional analyses accompanying the manuscript live in

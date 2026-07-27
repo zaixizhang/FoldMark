@@ -229,7 +229,29 @@ class Decoder(nn.Module):
         self.code_extractor = nn.Linear(self._model_conf.node_embed_size, self._model_conf.watermark_emb)
         torch.nn.init.xavier_uniform_(self.code_extractor.weight)
         torch.nn.init.constant_(self.code_extractor.bias, 0.0)
-        
+
+        # Confidence-weighted decoding. The code extractor emits a per-residue
+        # code; the confidence head emits a per-residue scalar saying how much
+        # that residue should count when the per-residue codes are pooled into
+        # the final message:
+        #
+        #     w = softmax_i( a_i / T )   over valid residues only
+        #     code = sum_i w_i * z_i
+        #
+        # The head is zero-initialised, so at initialisation every logit is
+        # equal, the softmax is uniform, and the pooled code is exactly the
+        # masked mean. Confidence weighting is therefore a strict
+        # generalisation of unweighted pooling, and a checkpoint trained under
+        # mean pooling resumes from precisely where it left off.
+        self.confidence_weighted = getattr(
+            self._model_conf, 'confidence_weighted_decoding', True)
+        self.confidence_temperature = float(getattr(
+            self._model_conf, 'confidence_temperature', 1.0))
+        if self.confidence_weighted:
+            self.confidence_head = nn.Linear(self._model_conf.node_embed_size, 1)
+            torch.nn.init.constant_(self.confidence_head.weight, 0.0)
+            torch.nn.init.constant_(self.confidence_head.bias, 0.0)
+
         self.predictor = nn.ModuleDict()
         for b in range(2):
             self.predictor[f'ipa_{b}'] = ipa_pytorch.InvariantPointAttention(self._ipa_conf)
@@ -260,7 +282,39 @@ class Decoder(nn.Module):
                 )
 
 
-    def forward(self, input_feats):
+    @staticmethod
+    def _masked_mean(values, node_mask):
+        """Mean over residues, ignoring padding. values: [B, N, K]."""
+        mask = node_mask[..., None]
+        denom = mask.sum(dim=1).clamp(min=1e-6)
+        return (values * mask).sum(dim=1) / denom
+
+    def _pool_code(self, per_res_code, node_embed, node_mask):
+        """
+        Pool per-residue codes into a single message.
+
+        Returns (pooled_code [B, K], weights [B, N]) where `weights` are the
+        normalised per-residue weights actually used — the confidence
+        distribution when weighting is enabled, uniform masked weights when it
+        is not.
+        """
+        if not self.confidence_weighted:
+            denom = node_mask.sum(dim=1, keepdim=True).clamp(min=1e-6)
+            return self._masked_mean(per_res_code, node_mask), node_mask / denom
+
+        logits = self.confidence_head(node_embed).squeeze(-1)
+        logits = logits / max(self.confidence_temperature, 1e-6)
+        # Padding must carry no weight and must not enter the softmax
+        # normaliser either, hence masked_fill with -inf rather than a
+        # post-hoc multiply.
+        logits = logits.masked_fill(node_mask < 0.5, float('-inf'))
+        weights = torch.softmax(logits, dim=1)
+        # A fully padded row would produce NaN; zero it instead.
+        weights = torch.nan_to_num(weights, nan=0.0)
+        pooled = (per_res_code * weights[..., None]).sum(dim=1)
+        return pooled, weights
+
+    def forward(self, input_feats, return_confidence=False):
         node_mask = input_feats['res_mask']
         edge_mask = node_mask[:, None] * node_mask[:, :, None]
         trans_t = input_feats['pred_trans']
@@ -297,8 +351,16 @@ class Decoder(nn.Module):
                 edge_embed = self.predictor[f'edge_transition_{b}'](node_embed, edge_embed)
                 edge_embed *= edge_mask[..., None]
         
-        pred_code = self.code_extractor(node_embed).mean(dim=1)
-    
+        # Per-residue codes, pooled into one message by confidence weighting.
+        # Note the previous implementation used a plain .mean(dim=1) over the
+        # padded length: because code_extractor has a bias, padded positions
+        # contributed that bias and the divisor was the padded length rather
+        # than the true one. Both pooling paths below respect node_mask.
+        per_res_code = self.code_extractor(node_embed)
+        pred_code, confidence = self._pool_code(per_res_code, node_embed, node_mask)
+
+        if return_confidence:
+            return pred_code, confidence
         return pred_code
 
 
