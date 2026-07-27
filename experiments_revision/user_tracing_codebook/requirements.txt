@@ -1,0 +1,8 @@
+# Million-user tracing codebook — additional dependencies.
+# Steps 1 and 2 are pure coding theory and need only numpy/pandas; no model,
+# no GPU, no structure data.
+
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10        # binomial / Kruskal-Wallis tests, Poisson-binomial tail
+matplotlib>=3.7    # step 3 figure

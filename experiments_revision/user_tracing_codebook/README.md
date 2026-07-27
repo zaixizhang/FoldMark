@@ -1,0 +1,174 @@
+# Million-user tracing: codebook construction and statistical calibration
+
+How the user codebook is built, how close its signatures get to one another, how
+attribution behaves when the decoder makes bit errors, and whether the null model
+behind the false-positive rate actually holds.
+
+```
+Step 1 ── Build the codebook (extended BCH pool + max–min selection)
+              ↓  codebook.npy, nearest-neighbour distance distribution
+Step 2 ── Attribution under bit errors, plus a null arm
+              ↓  correct / wrong / abstain rates, false attribution rate
+Step 3 ── Null calibration: bias, dependence, covariates, corrected FPR
+              ↓  per-position statistics + calibrated FPR + figure
+```
+
+Steps 1 and 2 are pure coding theory — no model, no structures, no GPU. Step 3
+takes decoded bits from unwatermarked structures as input.
+
+## Codebook construction
+
+**Stage 1 — candidate pool.** A binary BCH code of length 31 with t = 2 has
+parameters [31, 21, 5]; adding an overall parity bit extends it to
+**[32, 21, 6]**: 2^21 = 2,097,152 codewords at minimum Hamming distance 6. The
+generator polynomial is derived from the cyclotomic cosets of GF(2^5) at run
+time rather than hard-coded, and `verify_minimum_distance()` confirms d_min = 6
+by exhaustive enumeration of all 2^21 codewords — a proof, not a claim.
+
+Verified pool weight distribution:
+
+| weight | 0 | 6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | 22 | 24 | 26 | 32 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| count | 1 | 992 | 10,540 | 60,512 | 228,160 | 446,400 | 603,942 | 446,400 | 228,160 | 60,512 | 10,540 | 992 | 1 |
+
+**Stage 2 — max–min selection.** Users are selected one at a time, each time
+taking the candidate whose nearest-neighbour distance to the already-selected
+set is largest; ties broken by larger mean distance to the selected set, then by
+a fixed seeded order. Deterministic given `--seed`.
+
+Encoding is linear, so `encode(m1) XOR encode(m2) = encode(m1 XOR m2)`. The
+distance between two candidates therefore depends only on the XOR of their
+message indices, and a single precomputed weight table of length 2^21 answers
+every distance query by lookup. That is what makes both the selection and the
+exact nearest-neighbour statistics tractable at 10^6 scale (the full build takes
+under two minutes on one CPU core).
+
+## What the max–min selection actually buys
+
+Measured with `--compare_random`, exact nearest-neighbour distances:
+
+| Users | Max–min | Uniformly random |
+|-------|---------|------------------|
+| 1,000 | **10.000** (all at 10) | 7.304 |
+| 10,000 | **8.000** (all at 8) | 6.018 |
+| 100,000 | 6.000 (all at 6) | 6.000 |
+| 1,000,000 | 6.000 (all at 6) | 6.000 |
+
+**At 10^6 users the max–min procedure confers no advantage.** Every selected
+codeword has a nearest neighbour at exactly distance 6 — the same distribution
+a uniformly random selection gives. The procedure helps substantially up to
+~10^4 users and is saturated by 10^5.
+
+This is a property of the parameters, not a defect of the implementation. A set
+of 32-bit words with pairwise distance ≥ 8 is by definition a code with d ≥ 8
+and length 32; the best known such codes hold on the order of 2^17 ≈ 131,000
+words, far below 10^6. So at a million users on 32 bits, **minimum distance 6 is
+essentially optimal and cannot be improved by any selection rule.**
+
+The honest framing is therefore:
+
+- the distance-6 guarantee comes from the **code**, and is close to the best
+  achievable at this scale;
+- the max–min selection is worthwhile at smaller user counts and harmless at
+  10^6, but it does not improve the nearest-neighbour distribution there;
+- what actually controls misattribution at 10^6 users is the **attribution
+  rule** (Step 2), not the codebook geometry.
+
+## Attribution under decoding errors
+
+With d_min = 6 the code detects up to 5 bit errors and corrects up to 2. Step 2
+attributes by minimum Hamming distance subject to two guards:
+
+```
+d1 = distance to nearest codeword
+d2 = distance to second nearest
+
+attribute  if  d1 <= radius  AND  (d2 - d1) >= margin
+abstain    otherwise
+```
+
+The `margin` guard is the one that matters at a million users: with every
+codeword having neighbours at distance 6, an unguarded nearest-neighbour rule
+will confidently name the wrong user once errors accumulate. Refusing to
+attribute when two candidates are nearly equidistant converts would-be
+misattributions into abstentions, which is the right trade for a tracing claim.
+
+Outcomes are reported as three separate numbers — **correct**, **wrong**, and
+**abstain** — so that "named the wrong user" is never hidden inside an accuracy
+figure. A null arm pushes unwatermarked decodes through the same rule to give
+the false attribution rate.
+
+## Null calibration
+
+The tracing false-positive rate is usually derived assuming decoded bits from an
+unwatermarked structure are independent Bernoulli(0.5). That is an assumption
+about a *learned* decoder. Step 3 tests it directly and reports:
+
+- **a. Per-position bias** — P(bit = 1) per position, exact binomial test against
+  0.5, Holm-corrected across the 32 positions.
+- **b. Between-position dependence** — full correlation matrix, max and mean
+  |r|, and a permutation test on the maximum (columns shuffled independently, so
+  the null preserves per-position bias but destroys dependence).
+- **c. Covariate dependence** — mean bit rate stratified by protein length,
+  fold class and confidence, each with a Kruskal–Wallis test.
+- **d. Calibrated FPR** — computed three ways: idealised Binomial(32, 0.5); a
+  Poisson-binomial using the measured per-position p_i (drops unbiasedness but
+  keeps independence); and the empirical whole-codebook attribution rate over
+  the supplied unwatermarked decodes (assumes neither).
+
+If the three diverge, the empirical number is the one to report. The script
+prints the empirical/idealised ratio explicitly.
+
+### Input format for Step 3
+
+```csv
+structure_id,bits,length,fold_class,confidence
+1abc_A,01101001010110100110100110101101,157,alpha,0.87
+```
+
+`bits` is a 32-character 0/1 string from the decoder run on an **unwatermarked**
+structure. `length`, `fold_class` and `confidence` are optional; whichever are
+present get tested.
+
+## Running
+
+```bash
+pip install -r experiments_revision/user_tracing_codebook/requirements.txt
+
+# Full million-user codebook (~2 min, CPU only)
+python experiments_revision/user_tracing_codebook/step1_build_codebook.py \
+    --n_users 1000000 --seed 0 --compare_random
+
+python experiments_revision/user_tracing_codebook/step2_tracing_simulation.py \
+    --codebook experiments_revision/user_tracing_codebook/outputs/step1/codebook.npy \
+    --radius 2 --margin 1
+
+python experiments_revision/user_tracing_codebook/step3_null_calibration.py \
+    --null_bits_csv unwatermarked_decodes.csv \
+    --codebook experiments_revision/user_tracing_codebook/outputs/step1/codebook.npy
+```
+
+Smaller scales for a quick check: `--n_users 10000`.
+
+## Outputs
+
+| File | Contents |
+|------|----------|
+| `outputs/step1/codebook.npy` | Selected message indices (uint32) |
+| `outputs/step1/codebook_bits.npy` | Codewords as an (n_users, 32) bit matrix |
+| `outputs/step1/pool_weight_distribution.csv` | Verified weight distribution of the pool |
+| `outputs/step1/nn_distance_distribution.csv` | Exact nearest-neighbour distances of the selected codebook |
+| `outputs/step1/codebook_summary.json` | Parameters, seed, verified d_min, NN statistics, random baseline |
+| `outputs/step2/attribution_by_error_rate.csv` | correct / wrong / abstain per per-bit error rate |
+| `outputs/step2/attribution_null.csv` | False attribution rate on unwatermarked input |
+| `outputs/step3/per_position_bias.csv` | Per-position P(bit=1) with Holm-corrected tests |
+| `outputs/step3/position_correlations.csv` | 32x32 correlation matrix |
+| `outputs/step3/covariate_stratification.csv` | Stratified bit rates with Kruskal–Wallis tests |
+| `outputs/step3/fpr_calibration.csv` | FPR under the three null models |
+| `outputs/step3/null_calibration.png/.pdf` | Per-position bias and correlation heatmap |
+
+## Reproducibility
+
+Everything in Steps 1 and 2 is deterministic given `--seed`; the seed is
+recorded in `codebook_summary.json` along with the generator polynomial and the
+verified minimum distance, so a reader can regenerate the exact codebook.
