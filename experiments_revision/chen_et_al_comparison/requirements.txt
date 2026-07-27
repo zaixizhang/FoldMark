@@ -1,0 +1,13 @@
+# Chen et al. baseline comparison — additional dependencies.
+# The FoldMark-Protenix requirements (from the HuggingFace Space) are assumed
+# to be installed already; these are what this comparison adds on top.
+
+protein-watermark>=0.1.0     # Chen et al., https://github.com/poseidonchan/ProteinWatermark
+transformers>=4.38           # ProGen2 + ESMFold
+torch>=2.0
+tmtools>=0.2.0               # TM-align for scTM
+biopython>=1.81
+scipy>=1.10                  # Wilcoxon signed-rank
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
