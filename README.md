@@ -102,26 +102,24 @@ Each protein has **three scripts** covering the full pipeline:
 | 2 | `step2_proteinmpnn_inverse_folding.py` | Partial inverse folding with ProteinMPNN (100 sequences, T = 0.1) |
 | 3 | `step3_esm2_ranking.py` | Score with ESM2-650M and export top constructs for synthesis |
 
-| Protein | PDB | Length | Design region(s) | Fixed / no-go | Assay |
-|---------|-----|--------|------------------|---------------|-------|
-| [eGFP](tutorials/egfp/) | 4EUL | 239 aa | 15–40, 160–190 (surface loops) | Chromophore + proton-wire residues | Fluorescence |
-| [Cas13](tutorials/cas13/) | 7VTI (apo) | ~800 aa | 258–325 (helical lid) | HEPN catalytic dyads | SHERLOCK editing |
-| [DHFR](tutorials/dhfr/) | 4P66 | 159 aa | 150–157 (C-terminal tail) | Met20 loop, Asp27, folate cleft, GGG motif | DHF → THF reductase activity |
-| [TEV](tutorials/tev/) | 1LVM | 241 aa | A: 11–25 + alternating 178–197<br>B: 11–25 + sparse 222–241 | His46 / Asp81 / Cys151 triad, Trp198, Cys19 | ENLYFQ↓G cleavage |
+**eGFP (PDB 4EUL)** — design regions: residues 15–40 and 160–190 (surface-exposed loops).
+Chromophore residues and proton-wire residues are fixed. 12 constructs synthesised;
+98% fluorescence and >90% watermark bit accuracy.
 
-**eGFP** — 12 constructs synthesised; 98% fluorescence and >90% watermark bit accuracy.
+**Cas13 (PDB 7VTI, apo/inactive state)** — design region: residues 258–325 (helical lid).
+HEPN catalytic dyads are fixed. Top constructs showed 95% editing efficiency and
+over 90% watermark bit accuracy.
 
-**Cas13** — top constructs showed 95% editing efficiency and over 90% watermark bit accuracy.
+**DHFR (PDB 4P66)** — design region: residues 150–157 (C-terminal tail). The Met20
+gating loop, Asp27 and the folate-binding cleft are fixed.
 
-**DHFR and TEV** are the harder cases: both are small, compact enzymes with no
-spare surface loops, so their watermark carriers are narrow and — for TEV —
-**sparse** (alternating or 1-in-4 positions) rather than solid blocks. Catalytic
-residues are held fixed by an explicit hold list in each Step 2 script, applied
-after region expansion so that widening the design window cannot silently
-destroy the active site. TEV additionally has two carrier groups selectable with
-`--group a|b`; group B uses the engineered C-terminal extension (222–241), which
-is absent from the 1LVM crystal, so Step 1 predicts the full-length 241-aa
-construct rather than reusing the crystal.
+**TEV protease (PDB 1LVM)** — two sparse carrier groups selectable with `--group a|b`:
+group A uses residues 11–25 plus alternating positions of 178–197; group B uses
+11–25 plus 1-in-4 positions of the engineered C-terminal extension 222–241. The
+His46 / Asp81 / Cys151 catalytic triad is fixed.
+
+For both enzymes, **2 out of 3 top-ranked variants retained activity equivalent to
+the corresponding wildtype enzyme**, with >90% watermark bit accuracy.
 
 ```bash
 # Quick start (run from the FoldMark HuggingFace Space root after installation)

@@ -83,11 +83,8 @@ the PLL gap to wild type is < 0.03 nat/position.
 ## Wet-lab results
 
 Top-ranked constructs were synthesised and assayed for **DHF → THF reductase
-specific activity** (mU/mg, NADPH-coupled absorbance assay), alongside a
-catalytically dead control:
+specific activity** (NADPH-coupled absorbance assay):
 
-- The two highest-ranked variants retained ~**80 – 85 %** of wild-type specific
-  activity.
-- Activity degraded monotonically with ESM2 rank, confirming that the PLL
-  ranking is predictive of retained enzyme function.
+- **2 out of 3 top-ranked variants retained activity equivalent to the wild-type
+  enzyme.**
 - Watermark bit accuracy > 90 % on the tested sequences.

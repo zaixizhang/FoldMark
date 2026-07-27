@@ -98,10 +98,6 @@ wild-type predicted fold, which stays **> 0.96** for every design.
 Top-ranked constructs were expressed and assayed for **ENLYFQ↓G cleavage
 efficiency** against a standard substrate:
 
-- Group A constructs retained cleavage activity comparable to wild-type within
-  assay variability.
-- Group B (C-terminal extension carrier) constructs were also active, consistent
-  with the extension being the most functionally neutral carrier.
-- Lower-ranked designs lost activity, again confirming that the ESM2-650M PLL
-  ranking tracks retained protease function.
+- **2 out of 3 top-ranked variants retained activity equivalent to the wild-type
+  enzyme.**
 - Watermark bit accuracy > 90 % on the tested sequences.
