@@ -90,8 +90,9 @@ pip install -e .
 
 ## 📖 Reproduction Tutorials
 
-Step-by-step scripts to reproduce the eGFP and Cas13 wet-lab watermarking
-experiments are provided in [`tutorials/`](tutorials/).
+Step-by-step scripts to reproduce the wet-lab watermarking experiments are
+provided in [`tutorials/`](tutorials/), covering **four proteins**: two
+fluorescent / nuclease targets (eGFP, Cas13) and two enzymes (DHFR, TEV).
 
 Each protein has **three scripts** covering the full pipeline:
 
@@ -101,20 +102,56 @@ Each protein has **three scripts** covering the full pipeline:
 | 2 | `step2_proteinmpnn_inverse_folding.py` | Partial inverse folding with ProteinMPNN (100 sequences, T = 0.1) |
 | 3 | `step3_esm2_ranking.py` | Score with ESM2-650M and export top constructs for synthesis |
 
-**eGFP (PDB 4EUL)** — design regions: residues 15–40 and 160–190 (surface-exposed loops).
-Chromophore residues and proton-wire residues are fixed. 12 constructs synthesised;
-98% fluorescence and >90% watermark bit accuracy.
+| Protein | PDB | Length | Design region(s) | Fixed / no-go | Assay |
+|---------|-----|--------|------------------|---------------|-------|
+| [eGFP](tutorials/egfp/) | 4EUL | 239 aa | 15–40, 160–190 (surface loops) | Chromophore + proton-wire residues | Fluorescence |
+| [Cas13](tutorials/cas13/) | 7VTI (apo) | ~800 aa | 258–325 (helical lid) | HEPN catalytic dyads | SHERLOCK editing |
+| [DHFR](tutorials/dhfr/) | 4P66 | 159 aa | 150–157 (C-terminal tail) | Met20 loop, Asp27, folate cleft, GGG motif | DHF → THF reductase activity |
+| [TEV](tutorials/tev/) | 1LVM | 241 aa | A: 11–25 + alternating 178–197<br>B: 11–25 + sparse 222–241 | His46 / Asp81 / Cys151 triad, Trp198, Cys19 | ENLYFQ↓G cleavage |
 
-**Cas13 (PDB 7VTI, apo/inactive state)** — design region: residues 258–325 (helical lid).
-HEPN catalytic dyads are fixed. Top constructs showed 95% editing efficiency and
-over 90% watermark bit accuracy. 
+**eGFP** — 12 constructs synthesised; 98% fluorescence and >90% watermark bit accuracy.
+
+**Cas13** — top constructs showed 95% editing efficiency and over 90% watermark bit accuracy.
+
+**DHFR and TEV** are the harder cases: both are small, compact enzymes with no
+spare surface loops, so their watermark carriers are narrow and — for TEV —
+**sparse** (alternating or 1-in-4 positions) rather than solid blocks. Catalytic
+residues are held fixed by an explicit hold list in each Step 2 script, applied
+after region expansion so that widening the design window cannot silently
+destroy the active site. TEV additionally has two carrier groups selectable with
+`--group a|b`; group B uses the engineered C-terminal extension (222–241), which
+is absent from the 1LVM crystal, so Step 1 predicts the full-length 241-aa
+construct rather than reusing the crystal.
 
 ```bash
 # Quick start (run from the FoldMark HuggingFace Space root after installation)
 python tutorials/egfp/step1_watermarked_structure_prediction.py
 python tutorials/egfp/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinMPNN
 python tutorials/egfp/step3_esm2_ranking.py
+
+# Enzymes
+python tutorials/dhfr/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinMPNN
+python tutorials/tev/step2_proteinmpnn_inverse_folding.py  --mpnn_dir ./ProteinMPNN --group a
 ```
+
+## 🧪 Supplementary Experiments
+
+Additional analyses accompanying the manuscript live in
+[`experiments_revision/`](experiments_revision/). Each subdirectory is
+self-contained, follows the same numbered `stepN_*.py` layout as `tutorials/`,
+and ships its own `README.md` and `requirements.txt`.
+
+| Directory | What it does |
+|-----------|--------------|
+| [`chen_et_al_comparison/`](experiments_revision/chen_et_al_comparison) | FoldMark vs. sequence-level protein watermarking (Chen et al.) under a matched ProGen2 generation and evaluation pipeline; bit recovery accuracy and scTM across sequence lengths, with paired Wilcoxon signed-rank tests |
+| [`robustness_postprocessing/`](experiments_revision/robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states |
+| [`user_tracing_codebook/`](experiments_revision/user_tracing_codebook) | Million-user 32-bit codebook from an extended BCH [32, 21, 6] construction, attribution under decoding errors, calibration of the decoder null, and an end-to-end encode → fold → detect → attribute round trip |
+| [`inverse_fold_refold/`](experiments_revision/inverse_fold_refold) | Watermark survival through ProteinMPNN inverse folding followed by clean re-folding with Protenix, ESMFold or AlphaFold3 |
+
+Two conventions hold throughout: statistical tests report the test used, n, the
+effect size, and a multiple-comparison-corrected p-value; and figure scripts read
+their numbers from the upstream step's CSV rather than hard-coding summary
+statistics, so every panel traces back to the data that produced it.
 
 ## Quick start on HuggingFace
 

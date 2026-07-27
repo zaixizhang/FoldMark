@@ -55,7 +55,7 @@ Step 3 ── ESM2-650M pseudo-log-likelihood ranking
               ↓  top-ranked sequences ready for synthesis
 ```
 
-## Reviewer Q&A
+## FAQ
 
 | Question | Answer |
 |----------|--------|
@@ -88,4 +88,16 @@ pip install fair-esm
 python tutorials/egfp/step1_watermarked_structure_prediction.py
 python tutorials/egfp/step2_proteinmpnn_inverse_folding.py
 python tutorials/egfp/step3_esm2_ranking.py
+
+# The enzymes follow the same three steps; TEV takes a carrier group:
+python tutorials/dhfr/step2_proteinmpnn_inverse_folding.py --mpnn_dir ./ProteinMPNN
+python tutorials/tev/step2_proteinmpnn_inverse_folding.py  --mpnn_dir ./ProteinMPNN --group a
 ```
+
+## Supplementary experiments
+
+The tutorials above reproduce the wet-lab constructs. The additional analyses
+accompanying the manuscript — baseline comparison, robustness to structural
+post-processing, million-user tracing, and the inverse-fold/re-fold round trip —
+live in [`experiments_revision/`](../experiments_revision/) and follow the same
+numbered `stepN_*.py` layout.
