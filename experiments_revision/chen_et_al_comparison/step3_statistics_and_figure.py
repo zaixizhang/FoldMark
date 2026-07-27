@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Step 3 — Statistics and Extended Data Fig. 1 (panels b, c)
-===========================================================
+Step 3 — Statistics and comparison figure
+===========================================
 
 Reads the paired per-sequence scores from Step 2 and produces:
 
@@ -15,8 +15,8 @@ Reads the paired per-sequence scores from Step 2 and produces:
      the raw p-values.  The stars drawn on the figure use the **corrected**
      p-values.
 
-  3. The two-panel bar figure (Extended Data Fig. 1, panels b and c): mean ±
-     s.d., significance bars, Arial, thick left/bottom spines.
+  3. The two-panel bar figure (bit recovery accuracy and scTM): mean ± s.d.,
+     significance bars, Arial, thick left/bottom spines.
 
 Every number in the figure comes from the Step 2 CSV — nothing is hard-coded.
 
@@ -136,7 +136,7 @@ def _panel(ax, x, lengths, chen_mean, chen_sd, fm_mean, fm_sd, stats_labels,
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="Step 3: Wilcoxon signed-rank statistics and Extended Data Fig. 1 (b, c)"
+        description="Step 3: Wilcoxon signed-rank statistics and the comparison figure"
     )
     ap.add_argument("--paired_csv", type=Path, default=DEFAULT_PAIRED)
     ap.add_argument("--out_dir",    type=Path, default=OUT_DIR)

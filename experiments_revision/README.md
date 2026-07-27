@@ -1,15 +1,15 @@
 # Supplementary experiments
 
 Code for the supplementary analyses accompanying the manuscript. Each
-subdirectory is self-contained and produces the figure and statistics for the
-corresponding Extended Data item.
+subdirectory is self-contained and produces the figure and statistics for one
+analysis.
 
 ## Contents
 
 | Directory | Experiment | Manuscript item |
 |-----------|------------|-----------------|
-| [`chen_et_al_comparison/`](./chen_et_al_comparison) | FoldMark vs. a protein-specific sequence-level watermarking baseline (Chen et al.) | Extended Data Fig. 1 |
-| [`robustness_postprocessing/`](./robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states | Extended Data Fig. 4 |
+| [`chen_et_al_comparison/`](./chen_et_al_comparison) | FoldMark vs. a protein-specific sequence-level watermarking baseline (Chen et al.) | Bit recovery accuracy and scTM vs. sequence length |
+| [`robustness_postprocessing/`](./robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states | Detection ROC per post-processing method |
 
 ## Conventions
 

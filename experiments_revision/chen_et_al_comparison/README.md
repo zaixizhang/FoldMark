@@ -1,4 +1,4 @@
-# Chen et al. baseline comparison (Extended Data Fig. 1)
+# Chen et al. baseline comparison
 
 A **protein-specific baseline** comparison: FoldMark against sequence-level
 protein watermarking. This directory contains the full pipeline for that
@@ -114,9 +114,9 @@ python .../step2_fold_and_score.py --limit 50 --skip_sctm   # recovery only, fas
 | `outputs/step2/per_sequence_scores.csv` | One row per (sequence, arm): bit accuracy, scTM |
 | `outputs/step2/paired_scores.csv` | One row per pair, both arms side by side |
 | `outputs/step3/statistics.csv` | Per length and metric: n, means, s.d., medians, W, p, Holm-corrected p, stars |
-| `outputs/step3/watermark_comparison_chen_vs_foldmark.png/.pdf` | Extended Data Fig. 1, panels b and c |
+| `outputs/step3/watermark_comparison_chen_vs_foldmark.png/.pdf` | Two-panel figure: bit recovery accuracy and scTM |
 
-## Provenance of Extended Data Fig. 1
+## Figure provenance
 
 Step 3 is the canonical source for this figure. All plotted values are read from
 `outputs/step2/*.csv`; no summary statistic is hard-coded in the figure script,

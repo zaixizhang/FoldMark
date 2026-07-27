@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Step 3 — Detection ROC and Extended Data Fig. 4 (panels a, b)
-==============================================================
+Step 3 — Detection ROC under post-processing
+=============================================
 
 Builds the watermark-detection ROC for each post-processing method, separately
 for protein–ligand and protein–antibody complexes, and reports TPR at a fixed
@@ -87,7 +87,7 @@ def empirical_tpr(k_values: np.ndarray, tau: np.ndarray) -> np.ndarray:
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="Step 3: detection ROC under post-processing (Extended Data Fig. 4 a, b)"
+        description="Step 3: detection ROC under post-processing"
     )
     ap.add_argument("--scores_csv", type=Path, default=DEFAULT_SCORES)
     ap.add_argument("--out_dir",    type=Path, default=OUT_DIR)

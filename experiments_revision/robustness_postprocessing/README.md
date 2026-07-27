@@ -1,4 +1,4 @@
-# Watermark persistence under structural post-processing (Extended Data Fig. 4)
+# Watermark persistence under structural post-processing
 
 Does the FoldMark watermark survive the refinement steps a structure would
 routinely be put through after prediction — and does it still survive when the
@@ -123,7 +123,7 @@ python .../step1_postprocess_structures.py --manifest m.csv --iterations 5
 | `outputs/step2/detection_scores.csv` | Per structure and method: K, matching bits, bit accuracy |
 | `outputs/step3/roc_points.csv` | Full staircase: (dataset, method, tau, FPR, TPR) |
 | `outputs/step3/tpr_at_fpr.csv` | TPR at the target FPR, with n, threshold, achieved FPR, mean ± s.d. bit accuracy |
-| `outputs/step3/relaxation_roc.png/.pdf` | Extended Data Fig. 4, panels a and b |
+| `outputs/step3/relaxation_roc.png/.pdf` | Two-panel ROC figure: protein–ligand and protein–antibody |
 
 Post-processing failures are recorded rather than dropped silently: Step 1
 writes `ok=False` plus the exception, Step 2 skips those rows, and Step 3
@@ -131,7 +131,7 @@ reports the n actually used per curve in `tpr_at_fpr.csv`. Check those n values
 before quoting a TPR — a curve built from few structures has a coarse,
 step-limited TPR resolution.
 
-## Provenance of Extended Data Fig. 4
+## Figure provenance
 
 Step 3 is the canonical source for this figure. Every plotted TPR is computed
 from `outputs/step2/detection_scores.csv`; no curve is parameterised by an
