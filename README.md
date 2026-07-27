@@ -192,6 +192,8 @@ We thank the following open-source projects for their valuable contributions:
 - [WaDiff](https://github.com/rmin2000/WaDiff)
 - [AquaLoRA](https://github.com/Georgefwt/AquaLoRA)
 - [openfold](https://github.com/aqlaboratory/openfold)
+- [ProteinWatermark](https://github.com/poseidonchan/ProteinWatermark)
+- [ProteinMPNN](https://github.com/dauparas/ProteinMPNN)
 
 
 ## 📄 License
