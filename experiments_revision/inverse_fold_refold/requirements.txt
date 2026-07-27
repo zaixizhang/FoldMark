@@ -1,0 +1,17 @@
+# Inverse fold + clean re-fold round trip — additional dependencies.
+# The base FoldMark / FoldMark-Protenix environment is assumed to be installed.
+
+transformers>=4.38   # ESMFold
+torch>=2.0
+tmtools>=0.2.0       # TM-align back to the watermarked backbone
+biopython>=1.81
+scipy>=1.10          # Binomial null for the analytic FPR
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+
+# ProteinMPNN is used via its own repository, not pip:
+#   git clone https://github.com/dauparas/ProteinMPNN
+#
+# AlphaFold3 has its own licensing and installation path and is invoked through
+# --af3_command; the protenix and esmfold arms run without it.

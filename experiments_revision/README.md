@@ -11,6 +11,7 @@ analysis.
 | [`chen_et_al_comparison/`](./chen_et_al_comparison) | FoldMark vs. a protein-specific sequence-level watermarking baseline (Chen et al.) | Bit recovery accuracy and scTM vs. sequence length |
 | [`robustness_postprocessing/`](./robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states | Detection ROC per post-processing method |
 | [`user_tracing_codebook/`](./user_tracing_codebook) | Million-user codebook construction (extended BCH + max–min selection), attribution under decoding errors, and calibration of the decoder null | Nearest-neighbour distance statistics, attribution rates, null-bias diagnostics |
+| [`inverse_fold_refold/`](./inverse_fold_refold) | Watermark survival through ProteinMPNN inverse folding followed by clean re-folding with Protenix, ESMFold or AlphaFold3 | Detection ROC per re-folding model, with TM-score to the watermarked backbone |
 
 ## Conventions
 
