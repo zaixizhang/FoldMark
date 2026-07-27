@@ -9,6 +9,7 @@ corresponding Extended Data item.
 | Directory | Experiment | Manuscript item |
 |-----------|------------|-----------------|
 | [`chen_et_al_comparison/`](./chen_et_al_comparison) | FoldMark vs. a protein-specific sequence-level watermarking baseline (Chen et al.) | Extended Data Fig. 1 |
+| [`robustness_postprocessing/`](./robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states | Extended Data Fig. 4 |
 
 ## Conventions
 

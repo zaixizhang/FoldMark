@@ -1,0 +1,18 @@
+# Watermark persistence under post-processing — additional dependencies.
+# The base FoldMark / FoldMark-Protenix environment is assumed to be installed.
+
+# Amber relaxation uses the relaxer bundled in this repo (openfold/np/relax),
+# which needs OpenMM and PDBFixer:
+openmm>=8.0
+pdbfixer>=1.9
+
+scipy>=1.10        # Binomial null for the analytic FPR
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+
+# Rosetta FastRelax and NGK loop modeling require PyRosetta, which is NOT
+# pip-installable from PyPI and needs a (free for academic use) licence:
+#   https://www.pyrosetta.org/downloads
+# Install into the same environment, then the rosetta_* methods become available.
+# The amber and none methods run without it.
