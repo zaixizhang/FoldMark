@@ -37,15 +37,15 @@ Step 3 ── Wilcoxon signed-rank + Holm correction → statistics.csv + figure
 
 Chen et al. is a **zero-bit** watermark: its detector answers "is this sequence
 watermarked?" with a score and a p-value, but carries no payload. FoldMark
-embeds a **16-bit message** (`watermark_emb: 16`) and reports *bit recovery
+embeds a **32-bit message** (`watermark_emb: 32`) and reports *bit recovery
 accuracy*. Comparing the two on that metric requires lifting Chen et al. to a
 multi-bit scheme.
 
 `chen_watermark.py` does this with the standard **message-as-key
 (key-partition)** construction:
 
-- the 16-bit message is split into `n_chunks` chunks of `bits_per_chunk` bits
-  (default 16 × 1, matching FoldMark's payload);
+- the 32-bit message is split into `n_chunks` chunks of `bits_per_chunk` bits
+  (default 32 × 1, matching FoldMark's payload);
 - the sequence is split into `n_chunks` contiguous segments;
 - segment *j* is sampled under a private key derived from
   `HMAC-SHA256(master_key, j ‖ chunk_value_j)`, so the *choice of key* encodes
@@ -55,8 +55,8 @@ multi-bit scheme.
 
 **This construction is deliberately generous to the baseline** — it is the
 strongest obvious way to give a zero-bit scheme a payload. It also makes the
-short-length behaviour transparent rather than mysterious: at L = 100 with 16
-chunks, each segment is only ~6 residues, which is very little evidence per bit.
+short-length behaviour transparent rather than mysterious: at L = 100 with 32
+chunks, each segment is only ~3 residues, which is very little evidence per bit.
 
 Any comparison of "bit accuracy" against a zero-bit method rests on a choice of
 this kind, which is why it is stated explicitly here and in the Methods. A
@@ -110,7 +110,7 @@ python .../step2_fold_and_score.py --limit 50 --skip_sctm   # recovery only, fas
 
 | File | Contents |
 |------|----------|
-| `outputs/step1/manifest.csv` | Matched pairs: seed, 16-bit message, both sequences, Chen token ids |
+| `outputs/step1/manifest.csv` | Matched pairs: seed, 32-bit message, both sequences, Chen token ids |
 | `outputs/step2/per_sequence_scores.csv` | One row per (sequence, arm): bit accuracy, scTM |
 | `outputs/step2/paired_scores.csv` | One row per pair, both arms side by side |
 | `outputs/step3/statistics.csv` | Per length and metric: n, means, s.d., medians, W, p, Holm-corrected p, stars |

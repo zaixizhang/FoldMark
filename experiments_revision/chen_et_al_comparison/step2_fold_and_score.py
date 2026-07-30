@@ -14,7 +14,7 @@ For every matched pair produced by Step 1:
 
   foldmark arm
       The sequence carries no watermark.
-      · Fold with FoldMark-Protenix (`watermark=True`), which embeds the 16-bit
+      · Fold with FoldMark-Protenix (`watermark=True`), which embeds the 32-bit
         message into the backbone.
       · Recover bits from the STRUCTURE via the FoldMark decoder
         (`InferenceRunner.detect` → sigmoid(prediction['watermark']) > 0.5).
@@ -49,7 +49,11 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from chen_watermark import ChenMultiBitConfig, ChenMultiBitWatermarker  # noqa: E402
+from chen_watermark import (  # noqa: E402
+    DEFAULT_N_CHUNKS,
+    ChenMultiBitConfig,
+    ChenMultiBitWatermarker,
+)
 
 DEFAULT_MANIFEST = Path(__file__).resolve().parent / "outputs" / "step1" / "manifest.csv"
 OUT_DIR          = Path(__file__).resolve().parent / "outputs" / "step2"
@@ -121,7 +125,7 @@ def fold_with_protenix(
     return cifs[0]
 
 
-def foldmark_detect_bits(cif_path: Path, n_bits: int = 16) -> np.ndarray:
+def foldmark_detect_bits(cif_path: Path, n_bits: int = DEFAULT_N_CHUNKS) -> np.ndarray:
     """
     Recover the watermark bits from a FoldMark-predicted structure.
 
@@ -265,7 +269,7 @@ def main() -> None:
                     help="scratch dir for intermediate PDB/CIF (default: a temp dir)")
     ap.add_argument("--limit",    type=int, default=None,
                     help="only process the first N pairs (smoke test)")
-    ap.add_argument("--n_chunks", type=int, default=16)
+    ap.add_argument("--n_chunks", type=int, default=DEFAULT_N_CHUNKS)
     ap.add_argument("--bits_per_chunk", type=int, default=1)
     ap.add_argument("--context_code_length", type=int, default=5)
     ap.add_argument("--vocab_size", type=int, default=32)

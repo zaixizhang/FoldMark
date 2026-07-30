@@ -6,7 +6,7 @@ Multi-bit wrapper around the Chen et al. sequence-level watermark
 Chen et al. (`protein_watermark`, https://github.com/poseidonchan/ProteinWatermark)
 implement a **zero-bit** watermark: `WatermarkDetector.detect()` returns a
 detection score and a p-value answering "is this sequence watermarked?", but it
-carries no payload.  FoldMark, by contrast, embeds a **16-bit message** and
+carries no payload.  FoldMark, by contrast, embeds a **32-bit message** and
 reports *bit recovery accuracy*.
 
 To compare the two on a matched footing we lift Chen et al. to a multi-bit
@@ -20,12 +20,12 @@ scheme using the standard **message-as-key (key-partition)** construction:
   · At detection, segment j is scored under all `2 ** bits_per_chunk` candidate
     keys; the argmax is the recovered chunk value.
 
-With the defaults (16 chunks × 1 bit) this yields the same 16-bit payload as
-FoldMark's `watermark_emb: 16`, so bit-recovery accuracy is directly comparable.
+With the defaults (32 chunks × 1 bit) this yields the same 32-bit payload as
+FoldMark's `watermark_emb: 32`, so bit-recovery accuracy is directly comparable.
 
 Note this construction is *favourable* to Chen et al. — it is the strongest
 obvious way to give a zero-bit scheme a payload.  It also makes explicit why
-short sequences are hard: at L = 100 with 16 chunks each segment is only ~6
+short sequences are hard: at L = 100 with 32 chunks each segment is only ~3
 residues, which is little evidence per bit.
 
 Dependencies:
@@ -53,7 +53,7 @@ except ImportError as exc:  # pragma: no cover
 
 
 DEFAULT_MASTER_KEY = b"FoldMark-vs-Chen-comparison"
-DEFAULT_N_CHUNKS = 16       # matches FoldMark's 16-bit payload
+DEFAULT_N_CHUNKS = 32       # matches FoldMark's 32-bit payload
 DEFAULT_BITS_PER_CHUNK = 1
 DEFAULT_CONTEXT_CODE_LENGTH = 5   # Chen et al. default
 

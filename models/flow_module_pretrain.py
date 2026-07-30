@@ -37,6 +37,20 @@ class FlowModule(LightningModule):
         self._encoder_decoder_cfg = cfg.encoder_decoder
         self.rank = cfg.encoder_decoder.rank
 
+        # Watermark payload length, in bits. The encoder/decoder pair is built
+        # from encoder_decoder.watermark_emb, so the messages drawn during
+        # pretraining must use that same width — see the matching check in
+        # models/flow_module.py.
+        if self._model_cfg.watermark_emb != self._encoder_decoder_cfg.watermark_emb:
+            raise ValueError(
+                'model.watermark_emb '
+                f'({self._model_cfg.watermark_emb}) must equal '
+                'encoder_decoder.watermark_emb '
+                f'({self._encoder_decoder_cfg.watermark_emb}); both denote the '
+                'same watermark payload length in bits.'
+            )
+        self.watermark_emb = self._encoder_decoder_cfg.watermark_emb
+
         # Set-up vector field prediction model
         self.encoder = Encoder(self._encoder_decoder_cfg)
         self.decoder = Decoder(self._encoder_decoder_cfg)
@@ -213,7 +227,7 @@ class FlowModule(LightningModule):
 
         noisy_batch['rotmats_t'] = rotmats_1
         
-        noisy_batch['watermark'] = torch.randint(0, 2, (self._model_cfg.watermark_emb,)).repeat(num_batch, 1).float().to(batch['trans_1'].device)
+        noisy_batch['watermark'] = torch.randint(0, 2, (self.watermark_emb,)).repeat(num_batch, 1).float().to(batch['trans_1'].device)
         return noisy_batch    
     
     def on_validation_epoch_end(self):

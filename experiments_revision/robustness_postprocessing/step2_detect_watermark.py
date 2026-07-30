@@ -10,12 +10,12 @@ Decoding mirrors `runner.inference.infer_detect`:
 
     prediction['watermark'] → clamp(-10, 10) → sigmoid → threshold at 0.5
 
-The number of bits K is taken from the decoder output rather than assumed, so
-this works with either the 16-bit or 32-bit FoldMark configuration.  Note that
-a TPR at FPR = 1e-5 is only meaningful when K is large enough for the null tail
-to reach it: with K = 32 the smallest attainable analytic FPR is 2^-32, while
-with K = 16 it is 2^-16 ≈ 1.5e-5.  Step 3 warns if the requested FPR is below
-what K supports.
+The number of bits K is taken from the decoder output rather than assumed, so a
+checkpoint trained with a different payload width is handled correctly; FoldMark
+itself uses K = 32 throughout (`watermark_emb: 32`).  Note that a TPR at
+FPR = 1e-5 is only meaningful when K is large enough for the null tail to reach
+it: at K = 32 the smallest attainable analytic FPR is 2^-32 ≈ 2.3e-10, with
+plenty of headroom.  Step 3 warns if the requested FPR is below what K supports.
 
 Output
 ------

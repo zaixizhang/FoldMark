@@ -22,8 +22,8 @@ Two arms:
               watermark.  The watermark is instead applied at the structure
               prediction stage in Step 2, by folding with FoldMark-Protenix.
 
-Both arms embed/expect the same 16-bit payload, matching FoldMark's
-`watermark_emb: 16`.
+Both arms embed/expect the same 32-bit payload, matching FoldMark's
+`watermark_emb: 32`.
 
 Output : outputs/step1/
            sequences_chen.fasta
@@ -45,6 +45,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from chen_watermark import (  # noqa: E402
+    DEFAULT_N_CHUNKS,
     ChenMultiBitConfig,
     ChenMultiBitWatermarker,
     random_message,
@@ -151,7 +152,8 @@ def main() -> None:
     ap.add_argument("--n_per_length", type=int, default=DEFAULT_N_PER_LENGTH)
     ap.add_argument("--temperature",  type=float, default=DEFAULT_TEMPERATURE)
     ap.add_argument("--seed",         type=int, default=DEFAULT_SEED)
-    ap.add_argument("--n_chunks",     type=int, default=16, help="payload chunks (16 x 1 bit = 16-bit message)")
+    ap.add_argument("--n_chunks",     type=int, default=DEFAULT_N_CHUNKS,
+                    help="payload chunks (32 x 1 bit = 32-bit message)")
     ap.add_argument("--bits_per_chunk", type=int, default=1)
     ap.add_argument("--context_code_length", type=int, default=5)
     ap.add_argument("--out_dir",      type=Path, default=OUT_DIR)

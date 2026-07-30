@@ -33,7 +33,11 @@ interpolant:
 model:
   node_embed_size: 256
   edge_embed_size: 128
-  watermark_emb: 16
+  # Watermark payload length in bits. 32 is the setting reported throughout the
+  # paper and assumed by every tutorial and by experiments_revision/. It must
+  # match encoder_decoder.watermark_emb; FlowModule rejects a mismatch at
+  # construction rather than silently truncating the message.
+  watermark_emb: 32
   symmetric: false
   node_features:
     c_s: ${model.node_embed_size}
@@ -71,7 +75,9 @@ model:
 encoder_decoder:
   node_embed_size: 128
   edge_embed_size: 128
-  watermark_emb: 16
+  # Must equal model.watermark_emb — see the note there. This is the width of
+  # the decoder's code_extractor output and of the mapper's input.
+  watermark_emb: ${model.watermark_emb}
   rank: 16
   symmetric: false
   # Confidence-weighted decoding: the decoder emits a per-residue code plus a

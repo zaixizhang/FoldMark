@@ -44,11 +44,11 @@ per-bit calibration analysis (decoded bits on unwatermarked structures sit at
 the threshold. Every plotted point is measured; only the FPR axis is analytic.
 
 One consequence worth checking before quoting a number: a K-bit code cannot
-express an FPR below `2^-K`. With **K = 32** the smallest is 2.3e-10, so
-FPR = 1e-5 is comfortably reachable. With **K = 16** the smallest is 1.5e-5,
-i.e. essentially *at* the operating point, and TPR there means "all 16 bits
-recovered". Step 2 reads K from the decoder rather than assuming it, and Step 3
-warns if the requested FPR is below what K supports.
+express an FPR below `2^-K`. FoldMark uses **K = 32** throughout
+(`watermark_emb: 32`), for which the smallest attainable analytic FPR is
+2.3e-10, so FPR = 1e-5 is comfortably reachable. Step 2 still reads K from the
+decoder rather than assuming it, and Step 3 warns if the requested FPR is below
+what K supports, so a shorter payload degrades loudly rather than silently.
 
 ## Bound-state handling
 

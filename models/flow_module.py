@@ -144,8 +144,23 @@ class FlowModule(LightningModule):
         self._encoder_decoder_cfg = cfg.encoder_decoder
         self.rank = cfg.encoder_decoder.rank
 
+        # Watermark payload length, in bits. The flow model conditions on the
+        # watermark and the encoder/decoder read and write it, so the two config
+        # entries must agree; sampling from one and decoding against the other
+        # silently truncates the message. One value, checked once, used
+        # everywhere below.
+        if self._model_cfg.watermark_emb != self._encoder_decoder_cfg.watermark_emb:
+            raise ValueError(
+                'model.watermark_emb '
+                f'({self._model_cfg.watermark_emb}) must equal '
+                'encoder_decoder.watermark_emb '
+                f'({self._encoder_decoder_cfg.watermark_emb}); both denote the '
+                'same watermark payload length in bits.'
+            )
+        self.watermark_emb = self._model_cfg.watermark_emb
+
         # Set-up vector field prediction model
-        self.mapper = MapperNet(input_size=self._encoder_decoder_cfg.watermark_emb, output_size=self.rank)
+        self.mapper = MapperNet(input_size=self.watermark_emb, output_size=self.rank)
         model = FlowModel(cfg.model)
         state_dict = torch.load(self._exp_cfg.load_ckpt1)['state_dict']
         new_state_dict = OrderedDict()
@@ -248,6 +263,18 @@ class FlowModule(LightningModule):
             t[..., None], torch.tensor(training_cfg.t_normalize_clip))
         
         # Model output predictions.
+        #
+        # The LoRA scale is derived from row 0 alone. That is not a per-batch
+        # approximation: one message is drawn per step and .repeat()-ed across
+        # the batch (see training_step / validation_step), so every row of
+        # 'watermark' is identical and row 0 *is* the batch's message. The
+        # scale modulates one shared set of LoRA weights, so it has to be a
+        # single vector regardless — a batch of distinct messages would need
+        # one forward pass per message, not a pooled scale.
+        assert torch.equal(
+            noisy_batch['watermark'],
+            noisy_batch['watermark'][0:1].expand_as(noisy_batch['watermark'])
+        ), 'LoRA scale assumes one shared watermark per batch'
         scale = self.mapper(noisy_batch['watermark'][0:1])
         model_output = self.model(noisy_batch, scale)
         pred_trans_1 = model_output['pred_trans']
@@ -343,9 +370,9 @@ class FlowModule(LightningModule):
         res_mask = batch['res_mask']
         self.interpolant.set_device(res_mask.device)
         num_batch, num_res = res_mask.shape
-        batch['watermark'] = torch.randint(0, 2, (self._encoder_decoder_cfg.watermark_emb,)).repeat(num_batch, 1).float().to(batch['trans_1'].device)
+        batch['watermark'] = torch.randint(0, 2, (self.watermark_emb,)).repeat(num_batch, 1).float().to(batch['trans_1'].device)
         scale = self.mapper(batch['watermark'][0:1])
-        
+
         samples, _, _, pred_trans_1, pred_rotmats_1 = self.interpolant.sample(
             num_batch,
             num_res,
@@ -353,13 +380,18 @@ class FlowModule(LightningModule):
             scale
         )
         samples = samples[-1].numpy()
-        batch['trans_1'] = pred_trans_1
-        batch['rotmats_1'] = pred_rotmats_1
-        encoder_output = self.encoder(batch)
-        batch['pred_trans'], batch['pred_rotmats'] = encoder_output['pred_trans'], encoder_output['pred_rotmats']
-        
-        # batch['pred_trans'] = pred_trans_1
-        # batch['pred_rotmats'] = pred_rotmats_1
+
+        # Decode straight from the structure the finetuned model generated.
+        #
+        # An earlier version passed the sampled backbone through self.encoder
+        # first and decoded the encoder's output. That measured the
+        # encoder/decoder pair round-tripping its own watermark, not whether the
+        # LoRA-finetuned flow model actually emits a decodable mark, so the
+        # reported recovery was optimistic and did not validate what the method
+        # claims. The decoder now sees exactly what a third party would see: the
+        # model's own sample, with no encoder in the loop.
+        batch['pred_trans'] = pred_trans_1
+        batch['pred_rotmats'] = pred_rotmats_1
         pred_code = self.decoder(batch)
         pred_code = torch.clamp(pred_code, min=-10, max=10)
 
@@ -436,7 +468,7 @@ class FlowModule(LightningModule):
     def training_step(self, batch: Any, stage: int):
         step_start_time = time.time()
         self.interpolant.set_device(batch['res_mask'].device)
-        batch['watermark'] = torch.randint(0, 2, (self._model_cfg.watermark_emb,)).repeat(batch['res_mask'].shape[0], 1).float().to(batch['trans_1'].device)
+        batch['watermark'] = torch.randint(0, 2, (self.watermark_emb,)).repeat(batch['res_mask'].shape[0], 1).float().to(batch['trans_1'].device)
         with torch.no_grad():
             encoder_output = self.encoder(batch)
             batch['trans_1'], batch['rotmats_1'] = encoder_output['pred_trans'], encoder_output['pred_rotmats']
