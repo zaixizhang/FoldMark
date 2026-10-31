@@ -181,6 +181,7 @@ and ships its own `README.md` and `requirements.txt`.
 
 | Directory | What it does |
 |-----------|--------------|
+| [`matched_sequence_circulation/`](experiments_revision/matched_sequence_circulation) | Extended Data Fig. 5 reference workflow: paired sequence editing, clean AF3 refolding, zero-bit detection and scTM |
 | [`chen_et_al_comparison/`](experiments_revision/chen_et_al_comparison) | FoldMark vs. sequence-level protein watermarking (Chen et al.) under a matched ProGen2 generation and evaluation pipeline; bit recovery accuracy and scTM across sequence lengths, with paired Wilcoxon signed-rank tests |
 | [`robustness_postprocessing/`](experiments_revision/robustness_postprocessing) | Watermark persistence under Amber relaxation, Rosetta FastRelax and NGK loop modeling, in protein–ligand and protein–antibody bound states |
 | [`user_tracing_codebook/`](experiments_revision/user_tracing_codebook) | Million-user 32-bit codebook from an extended BCH [32, 21, 6] construction, attribution under decoding errors, calibration of the decoder null, and an end-to-end encode → fold → detect → attribute round trip |
