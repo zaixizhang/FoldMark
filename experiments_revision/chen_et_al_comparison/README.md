@@ -53,17 +53,7 @@ multi-bit scheme.
 - at detection, each segment is scored under all `2 ** bits_per_chunk` candidate
   keys and the argmax is the recovered chunk.
 
-**This construction is deliberately generous to the baseline** — it is the
-strongest obvious way to give a zero-bit scheme a payload. It also makes the
-short-length behaviour transparent rather than mysterious: at L = 100 with 32
-chunks, each segment is only ~3 residues, which is very little evidence per bit.
-
-Any comparison of "bit accuracy" against a zero-bit method rests on a choice of
-this kind, which is why it is stated explicitly here and in the Methods. A
-zero-bit framing (detection AUROC, or TPR at fixed FPR, using Chen's native
-score/p-value against FoldMark's decoder confidence) is an alternative and also
-defensible comparison; we report the multi-bit form because it measures the
-payload capacity that FoldMark is designed to provide.
+This earlier multi-bit adaptation imposes a length-dependent constraint: a 100-residue sequence split into 32 segments provides about three residues per bit. The [matched sequence-circulation benchmark](../matched_sequence_circulation/) uses native whole-sequence detection for the zero-bit comparison in Extended Data Fig. 5.
 
 ## Metrics
 
