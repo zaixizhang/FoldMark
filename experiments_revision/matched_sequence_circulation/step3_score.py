@@ -5,7 +5,6 @@ import importlib
 import json
 import math
 import sys
-import tempfile
 from pathlib import Path
 
 from common import METHODS, output_file
@@ -52,16 +51,13 @@ def detector(method, cfg):
         # the registered code for this test, assigned to positives and controls alike.
         sibling = Path(__file__).resolve().parents[1] / "inverse_fold_refold"
         sys.path.insert(0, str(sibling))
-        from step2_clean_refold import cif_to_pdb
         from step3_detect_and_roc import decode_bits, load_runner
         runner, settings = load_runner(cfg["checkpoint"])
 
         def score(cif, context):
             if len(context) != 32 or set(context) - {"0", "1"}:
                 raise ValueError("FoldMark reference detector requires a registered 32-bit code")
-            with tempfile.TemporaryDirectory() as tmp:
-                pdb = cif_to_pdb(Path(cif), Path(tmp) / "refold.pdb")
-                bits = decode_bits(runner, settings, pdb, n_bits=32)
+            bits = decode_bits(runner, settings, Path(cif), n_bits=32)
             if len(bits) != 32:
                 raise ValueError("Incomplete FoldMark decoder output")
             return sum(int(b) == int(c) for b, c in zip(bits, context))
@@ -89,8 +85,26 @@ def sc_tm(reference, ref_chain, mobile, sequence):
     return float(tm_align(x, y, ref, pred).tm_norm_chain1)
 
 
+def validate_foldmark_codes(mapping):
+    """A registered query code must also be used for the matched negative."""
+    codes = {}
+    with mapping.open(newline="") as f:
+        for row in csv.DictReader(f):
+            if row["method"] != "foldmark":
+                continue
+            code = row.get("detector_context", "")
+            if len(code) != 32 or set(code) - {"0", "1"}:
+                raise ValueError("Missing or invalid registered FoldMark code")
+            pair = (row["sample_id"], row["run_id"])
+            if codes.setdefault(pair, code) != code:
+                raise ValueError(f"Positive and control must query the same registered code: {pair}")
+
+
 def main(args):
-    score = detector(args.method, json.loads(args.config.read_text()))
+    cfg = json.loads(args.config.read_text())
+    if args.method == "foldmark" and "factory" not in cfg:
+        validate_foldmark_codes(args.mapping)
+    score = detector(args.method, cfg)
     seen = set()
     with args.mapping.open(newline="") as src, output_file(args.output) as out:
         writer = csv.DictWriter(out, fieldnames=["row_id", "score", "scTM"])

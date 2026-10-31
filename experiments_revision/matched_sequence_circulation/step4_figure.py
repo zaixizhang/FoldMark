@@ -94,13 +94,15 @@ def draw(runs, output, fpr):
                    color=COLORS[j], label=LABELS[j], error_kw={"lw": 1, "capsize": 0})
         ax.set_xticks(xs, categories if detection else ["Conservative\nsubstitutions", "ProteinMPNN\nredesign", "pLM-guided\noptimization"])
         ax.set_title(TITLES[i] if detection else "Structural fidelity after clean AF3 refolding", fontsize=11)
-        ax.set_ylabel(f"TPR at FPR = {100*fpr:g}%" if detection else "scTM")
+        ax.set_ylabel(f"TPR (target FPR = {100*fpr:g}%)" if detection else "scTM")
         ax.set_xlabel("Final sequence identity (%)" if detection else "Editing / optimization at 90% identity")
         if detection:
             ax.yaxis.set_major_formatter(PercentFormatter(1))
             ax.set_ylim(0, 1.05)
         else:
-            ax.set_ylim(0.6, 1)
+            tm = runs[runs.identity == 90].groupby(["method", "operation"]).scTM
+            lower = float((tm.mean() - tm.std()).min())
+            ax.set_ylim(max(0, min(0.6, lower - 0.01)), 1)
         ax.spines[["top", "right"]].set_visible(False)
         ax.text(-0.12, 1.05, "abcd"[i], transform=ax.transAxes, fontweight="bold")
     fig.legend(*axes[0, 0].get_legend_handles_labels(), loc="outside upper center", ncol=4, frameon=False)

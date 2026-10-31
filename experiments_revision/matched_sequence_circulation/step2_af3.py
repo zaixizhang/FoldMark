@@ -24,10 +24,15 @@ def main(args):
                 data = {"name": job, "dialect": "alphafold3", "version": 1,
                         "modelSeeds": [seed],
                         "sequences": [{"protein": {"id": "A", "sequence": seq}}]}
-                with output_file(args.jobs / f"{job}.json") as handle:
-                    json.dump(data, handle)
-                if args.require_results and (not path.is_file() or path.stat().st_size == 0):
-                    raise FileNotFoundError(path)
+                job_file = args.jobs / f"{job}.json"
+                if args.require_results:
+                    if json.loads(job_file.read_text()) != data:
+                        raise ValueError(f"AF3 input does not match the edit manifest: {job_file}")
+                    if not path.is_file() or path.stat().st_size == 0:
+                        raise FileNotFoundError(path)
+                else:
+                    with output_file(job_file) as handle:
+                        json.dump(data, handle)
             writer.writerow(dict(row, job_id=job, refolded_cif=str(path.resolve())))
 
 

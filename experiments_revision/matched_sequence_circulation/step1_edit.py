@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 
 from common import METHODS, OPS, IDENTITIES, digest, output_file
-from editors import AA, blosum, mpnn, EsmEditor
+from editors import AA, blosum, EsmEditor, MpnnEditor
 
 FIELDS = ["sample_id", "split", "method", "label", "sequence"]
 EXTRA = ["run_id", "seed", "operation", "identity", "actual_identity", "positions",
@@ -35,7 +35,20 @@ def run(args):
                 row[name] = str((args.manifest.parent / row[name]).resolve())
     if len(set(args.seeds)) != len(args.seeds) or len(set(args.operators)) != len(args.operators):
         raise ValueError("Use distinct seeds and operators")
-    esm = None
+    if any(not 0 <= seed < 2**32 for seed in args.seeds):
+        raise ValueError("Seeds must be unsigned 32-bit integers for clean AF3 refolding")
+    # Check the full analysis design before allocating a model or editing any sequences.
+    for sid, split in splits.items():
+        labels = ("0", "1") if split == "test" else ("0",)
+        missing = [(m, label) for m in METHODS for label in labels if (sid, m, label) not in keys]
+        if missing:
+            raise ValueError(f"Missing paired inputs for {sid}: {missing}")
+    if "proteinmpnn" in args.operators:
+        if not args.mpnn_dir or any(not row.get("backbone") for row in rows):
+            raise ValueError("ProteinMPNN requires --mpnn-dir and a backbone for every arm")
+    if "esm2" in args.operators and not args.esm_checkpoint:
+        raise ValueError("Provide --esm-checkpoint for ESM2")
+    esm = mpnn = None
     with output_file(args.output) as f:
         writer = csv.DictWriter(f, [*columns, *EXTRA])
         writer.writeheader()
@@ -55,17 +68,15 @@ def run(args):
                         elif op == "blosum62":
                             edited = blosum(seq, sites, edit_seed)
                         elif op == "esm2":
-                            if not args.esm_checkpoint:
-                                raise ValueError("Provide --esm-checkpoint for ESM2")
                             if esm is None:
                                 esm = EsmEditor(args.esm_checkpoint, args.device)
                             edited = esm.edit(seq, sites)
                         else:
-                            if not args.mpnn_dir or not row.get("backbone"):
-                                raise ValueError("ProteinMPNN requires --mpnn-dir and backbone")
-                            edited = mpnn(seq, sites, edit_seed, row["backbone"],
-                                          row.get("chain") or "A", args.mpnn_dir,
-                                          args.temperature, args.mpnn_model)
+                            if mpnn is None:
+                                mpnn = MpnnEditor(args.mpnn_dir, args.mpnn_model,
+                                                  args.device, args.temperature)
+                            edited = mpnn.edit(seq, sites, edit_seed, row["backbone"],
+                                               row.get("chain") or "A")
                         actual = [i for i, (a, b) in enumerate(zip(seq, edited)) if a != b]
                         if len(edited) != len(seq) or set(edited) - set(AA) or set(actual) != set(sites):
                             raise ValueError(f"Edit budget mismatch for {row['sample_id']}, {op}, {identity}")
