@@ -2,7 +2,9 @@
 
 This reference implementation starts at the point where each method has produced a sequence to share. It implements the three sequence-editing conditions in panels a–c, exports clean AlphaFold 3 jobs, and calculates detection and structural fidelity from per-protein measurements. The algorithms and defaults below specify this implementation. A numerical comparison against the submitted figure requires the authors' archived inputs, detector settings and measured outputs.
 
-The [Extended Data Fig. 5 plotting workbook](plotting_reference/Extended_Data_Fig_5_Plot_Data.xlsx) lists the `Mean` and `Sample SD` for each bar in panels a–d. The `Point 1` to `Point 5` columns are for plotting only and carry no experimental run identifiers. Section 5 describes how to calculate run-level TPR and scTM from the sample manifest and per-protein measurements.
+The [Extended Data Fig. 5 workbook](plotting_reference/Extended_Data_Fig_5_Plot_Data.xlsx) contains one worksheet per panel. Each row gives five values (`Point 1` through `Point 5`) for one method and condition. The `Mean` and `Sample SD` formulas calculate their arithmetic mean and sample standard deviation (n = 5), which give the bar height and error bar. Panels a–c report TPR (%) at a target FPR of 0.1%. Panel d reports scTM after clean AlphaFold 3 refolding at 90% sequence identity.
+
+Section 5 describes how to calculate run-level outcomes from per-protein scores. Reproducing a paired significance comparison between FoldMark and Chen et al. also requires the original pairing and the test specification.
 
 Run the examples from this directory with Python 3.10+. Install `requirements.txt` in the analysis environment. For editing, install [ProteinMPNN](https://github.com/dauparas/ProteinMPNN) with its vanilla weights, PyTorch, and [fair-esm](https://github.com/facebookresearch/esm) with a local ESM2 checkpoint. Use the native environments for AF3 and each detector. Record dependency versions, upstream commits, checkpoint hashes, seeds and input file checksums with a production run. The numeric seeds below are examples.
 
