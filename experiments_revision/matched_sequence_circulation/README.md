@@ -2,6 +2,8 @@
 
 This reference implementation starts at the point where each method has produced a sequence to share. It implements the three sequence-editing conditions in panels a–c, exports clean AlphaFold 3 jobs, and calculates detection and structural fidelity from per-protein measurements. The algorithms and defaults below specify this implementation. A numerical comparison against the submitted figure requires the authors' archived inputs, detector settings and measured outputs.
 
+The [plotting workbook for panels a–d](plotting_reference/extended_data_fig5_reconstructed.xlsx) contains five values per bar constructed to match its plotted mean and sample standard deviation. Use it to inspect the plotted summaries. Verifying the reported run statistics or significance annotations requires the original run and protein identifiers, detector scores for watermarked samples and controls, and per-protein scTM measurements. Section 5 describes how to generate the panels from those measurements.
+
 Run the examples from this directory with Python 3.10+. Install `requirements.txt` in the analysis environment. For editing, install [ProteinMPNN](https://github.com/dauparas/ProteinMPNN) with its vanilla weights, PyTorch, and [fair-esm](https://github.com/facebookresearch/esm) with a local ESM2 checkpoint. Use the native environments for AF3 and each detector. Record dependency versions, upstream commits, checkpoint hashes, seeds and input file checksums with a production run. The numeric seeds below are examples.
 
 ## 1. Supply the paired inputs
